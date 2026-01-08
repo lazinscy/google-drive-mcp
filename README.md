@@ -2,16 +2,16 @@
 
 This project connects Claude Desktop to your Google Drive via the Model Context Protocol (MCP), allowing Claude to access and interact with your Drive files and folders securely.
 
-## Supported MCP tools (Wspierane funkcje)
+## Supported MCP tools
 
 These tools are exposed to Claude Desktop via MCP. Names below are the exact tool identifiers.
 
-- `list-all-folders` (no params): Lists all folders in your Drive (lista wszystkich folderów w Dysku).
-- `list-files-in-folder` (`folderId: string`): Lists files inside a specific folder (lista plików w konkretnym folderze).
-- `list-shared-with-me` (no params): Lists files and folders that other users shared with you (lista elementów udostępnionych Tobie).
-- `get-file-download-link` (`fileId: string`): Returns a direct download link and an online view link for a file (link do pobrania + link do podglądu online).
-- `get-file-metadata` (`fileId: string`): Returns detailed file metadata (m.in. rozmiar, typ, właściciele, daty utworzenia/modyfikacji, status udostępniania).
-- `get-file-revisions` (`fileId: string`): Returns file revision history with modification times and who modified each revision (historia wersji pliku).
+- `list-all-folders` (no params): Lists all folders in your Drive.
+- `list-files-in-folder` (`folderId: string`): Lists files inside a specific folder.
+- `list-shared-with-me` (no params): Lists files and folders that other users shared with you.
+- `get-file-download-link` (`fileId: string`): Returns a direct download link and an online view link for a file.
+- `get-file-metadata` (`fileId: string`): Returns detailed file metadata (size, type, owners, created/modified timestamps, sharing status).
+- `get-file-revisions` (`fileId: string`): Returns file revision history with modification times and who modified each revision.
 
 Typical flow: `list-all-folders` → `list-files-in-folder` → (`get-file-metadata` / `get-file-download-link` / `get-file-revisions`).
 
