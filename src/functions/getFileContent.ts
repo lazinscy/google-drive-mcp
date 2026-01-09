@@ -1,5 +1,5 @@
 import { drive } from '../google/googleClient.js'
-import { Readable } from 'stream'
+import mammoth from 'mammoth'
 
 export const getFileContent = async (fileId: string): Promise<{ success: boolean; content?: string; message?: string }> => {
   try {
@@ -37,45 +37,40 @@ export const getFileContent = async (fileId: string): Promise<{ success: boolean
       }
     }
 
-    // For regular files (docx, txt, etc.) - download binary and convert
-    if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-        mimeType === 'text/plain' ||
-        mimeType === 'text/html' ||
-        mimeType === 'text/csv' ||
-        mimeType === 'application/rtf') {
-      
+    // For docx files - download and parse with mammoth
+    if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
       const res = await drive.files.get({
         fileId,
         alt: 'media',
       }, { responseType: 'arraybuffer' })
       
       const buffer = Buffer.from(res.data as ArrayBuffer)
-      
-      // For docx, we need to extract text - for now return as UTF-8
-      // In production, you'd use a library like mammoth for docx
-      if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        // Try to extract readable text from docx (simplified approach)
-        const text = buffer.toString('utf-8')
-        // Extract text between XML tags (basic extraction)
-        const cleanText = text.replace(/<[^>]*>/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-        
-        return {
-          success: true,
-          content: cleanText,
-        }
-      }
+      const result = await mammoth.extractRawText({ buffer })
       
       return {
         success: true,
-        content: buffer.toString('utf-8'),
+        content: result.value,
+      }
+    }
+
+    // For plain text files
+    if (mimeType === 'text/plain' ||
+        mimeType === 'text/html' ||
+        mimeType === 'text/csv') {
+      const res = await drive.files.get({
+        fileId,
+        alt: 'media',
+      }, { responseType: 'text' })
+      
+      return {
+        success: true,
+        content: res.data as string,
       }
     }
 
     return {
       success: false,
-      message: `Unsupported file type: ${mimeType}. Supported: Google Docs, Sheets, docx, txt, html, csv, rtf`,
+      message: `Unsupported file type: ${mimeType}. Supported: Google Docs, Sheets, docx, txt, html, csv`,
     }
 
   } catch (error) {
