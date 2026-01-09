@@ -3,7 +3,8 @@ import { getFileContent } from '../functions/getFileContent.js'
 import { getFileMetadata } from '../functions/getFileMetadata.js'
 import { listFilesInFolder } from '../functions/listFilesInFolder.js'
 
-function normalizeId(value: string | null | undefined): string {
+function normalizeId(value: string | string[] | null | undefined): string {
+  if (Array.isArray(value)) return value[0] ?? ''
   return value ?? ''
 }
 
@@ -113,4 +114,3 @@ export function registerResources(server: McpServer) {
     }
   )
 }
-

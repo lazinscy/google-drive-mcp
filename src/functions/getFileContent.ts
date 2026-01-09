@@ -1,5 +1,4 @@
 import { drive } from '../google/googleClient.js'
-import mammoth from 'mammoth'
 
 export const getFileContent = async (fileId: string): Promise<{ success: boolean; content?: string; message?: string }> => {
   try {
@@ -39,6 +38,17 @@ export const getFileContent = async (fileId: string): Promise<{ success: boolean
 
     // For docx files - download and parse with mammoth
     if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      let mammoth: any
+      try {
+        mammoth = (await import('mammoth')).default
+      } catch {
+        return {
+          success: false,
+          message:
+            'DOCX support requires optional dependency "mammoth" (npm i mammoth).',
+        }
+      }
+
       const res = await drive.files.get({
         fileId,
         alt: 'media',

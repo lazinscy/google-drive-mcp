@@ -9,9 +9,6 @@ export async function main() {
     version: '1.0.0',
   })
 
-  // Ensure clients can enumerate resources even if we don't expose any yet.
-  server.setResourceRequestHandlers()
-
   registerResources(server)
   registerAllTools(server)
 

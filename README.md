@@ -12,8 +12,23 @@ These tools are exposed to Claude Desktop via MCP. Names below are the exact too
 - `get-file-download-link` (`fileId: string`): Returns a direct download link and an online view link for a file.
 - `get-file-metadata` (`fileId: string`): Returns detailed file metadata (size, type, owners, created/modified timestamps, sharing status).
 - `get-file-revisions` (`fileId: string`): Returns file revision history with modification times and who modified each revision.
+- `get-file-content` (`fileId: string`): Returns text content for supported file types (Google Docs/Sheets exports, txt/html/csv; docx requires optional `mammoth`).
 
 Typical flow: `list-all-folders` → `list-files-in-folder` → (`get-file-metadata` / `get-file-download-link` / `get-file-revisions`).
+
+## Configuration
+
+This server reads configuration from:
+- `process.env` (recommended)
+- optional CLI flags (`node build/index.js --help`)
+
+Required environment variables:
+- `CLIENT_ID`
+- `CLIENT_SECRET`
+- `REDIRECT_URI` (usually `http://localhost:3000`)
+
+Optional:
+- `GOOGLE_DRIVE_TOKEN_PATH` (absolute path to `token.json`)
 
 ## Setup and Usage
 
@@ -105,13 +120,44 @@ Add the following MCP server configuration, adjusting the path to your build out
 }
 ```
 
-If you use indirection, you can either:
-
 If you prefer, you can also pass credentials as CLI args (not recommended for long-term use):
 
 ```
 node build/index.js --client-id "..." --client-secret "..." --redirect-uri "http://localhost:3000"
 ```
+
+### Example `config.toml` (MCP runners)
+
+Some MCP runners use TOML configuration. The exact schema depends on your runner, but a common pattern looks like:
+
+```toml
+[mcp_servers."google-drive"]
+command = "node"
+args = [
+  "/absolute/path/to/google-drive-mcp/build/index.js",
+  "--token-path", "/absolute/path/to/google-drive-mcp/token.json",
+  "--redirect-uri", "http://localhost:3000",
+]
+
+[mcp_servers."google-drive".env]
+CLIENT_ID = "..."
+CLIENT_SECRET = "..."
+REDIRECT_URI = "http://localhost:3000"
+```
+
+If your runner does not forward `env` to the process, pass values via CLI args instead.
+
+## Troubleshooting
+
+- `Missing environment variable CLIENT_ID/CLIENT_SECRET/REDIRECT_URI`: ensure your runner forwards `env` to the `node` process, or use `--client-id/--client-secret/--redirect-uri`.
+- `token.json not found`: set `GOOGLE_DRIVE_TOKEN_PATH` or pass `--token-path` with an absolute path.
+- OAuth errors / refresh failures: re-run `npm run tokenGenerator` to generate a fresh token for the configured client.
+- `DOCX support requires optional dependency "mammoth"`: run `npm i mammoth` and rebuild.
+
+## Security
+
+- Do not commit `.env` or `token.json` (both are ignored by default).
+- Prefer passing secrets via environment variables; CLI args can leak via process lists/shell history.
 
 Run `node build/index.js --help` to see all supported flags.
 Save the file
