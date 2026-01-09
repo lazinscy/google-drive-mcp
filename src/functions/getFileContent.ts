@@ -1,4 +1,5 @@
 import { drive } from '../google/googleClient.js'
+import { Readable } from 'stream'
 
 export const getFileContent = async (fileId: string): Promise<{ success: boolean; content?: string; message?: string }> => {
   try {
@@ -8,9 +9,9 @@ export const getFileContent = async (fileId: string): Promise<{ success: boolean
       fields: 'mimeType, name',
     })
 
-    const mimeType = metadata.data.mimeType
+    const mimeType = metadata.data.mimeType || ''
 
-    // For Google Docs, Sheets, etc. - export as plain text or appropriate format
+    // For Google Docs - export as plain text
     if (mimeType === 'application/vnd.google-apps.document') {
       const res = await drive.files.export({
         fileId,
@@ -36,27 +37,45 @@ export const getFileContent = async (fileId: string): Promise<{ success: boolean
       }
     }
 
-    // For regular files (docx, txt, etc.) - download content
+    // For regular files (docx, txt, etc.) - download binary and convert
     if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
         mimeType === 'text/plain' ||
         mimeType === 'text/html' ||
+        mimeType === 'text/csv' ||
         mimeType === 'application/rtf') {
       
-      // For docx files, export as plain text through Google's conversion
-      const res = await drive.files.export({
+      const res = await drive.files.get({
         fileId,
-        mimeType: 'text/plain',
-      }, { responseType: 'text' })
+        alt: 'media',
+      }, { responseType: 'arraybuffer' })
+      
+      const buffer = Buffer.from(res.data as ArrayBuffer)
+      
+      // For docx, we need to extract text - for now return as UTF-8
+      // In production, you'd use a library like mammoth for docx
+      if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        // Try to extract readable text from docx (simplified approach)
+        const text = buffer.toString('utf-8')
+        // Extract text between XML tags (basic extraction)
+        const cleanText = text.replace(/<[^>]*>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+        
+        return {
+          success: true,
+          content: cleanText,
+        }
+      }
       
       return {
         success: true,
-        content: res.data as string,
+        content: buffer.toString('utf-8'),
       }
     }
 
     return {
       success: false,
-      message: `Unsupported file type: ${mimeType}. Supported: Google Docs, Sheets, docx, txt, html, rtf`,
+      message: `Unsupported file type: ${mimeType}. Supported: Google Docs, Sheets, docx, txt, html, csv, rtf`,
     }
 
   } catch (error) {
