@@ -22,10 +22,11 @@ export const listSharedWithMe = async (): Promise<ListFilesResponse> => {
       })),
     }
   } catch (error) {
-    console.error('Error listing shared files:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error listing shared files:', message)
     return {
       success: false,
-      message: `Error listing shared files: ${error}`,
+      message: `Error listing shared files: ${message}`,
     }
   }
 }

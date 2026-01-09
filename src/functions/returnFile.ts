@@ -23,10 +23,11 @@ export const returnFile = async (
       },
     }
   } catch (error) {
-    console.error('Error getting file download link:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error getting file download link:', message)
     return {
       success: false,
-      message: `Error getting file download link: ${error}`,
+      message: `Error getting file download link: ${message}`,
     }
   }
 }

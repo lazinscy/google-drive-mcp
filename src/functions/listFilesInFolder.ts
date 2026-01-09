@@ -24,10 +24,11 @@ export const listFilesInFolder = async (
       files,
     }
   } catch (error) {
-    console.error('Error listing files in folder:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error listing files in folder:', message)
     return {
       success: false,
-      message: `Error listing files in folder: ${error}`,
+      message: `Error listing files in folder: ${message}`,
     }
   }
 }

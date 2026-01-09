@@ -22,10 +22,11 @@ export const listAllFolders = async (): Promise<ListFoldersResponse> => {
       folders,
     }
   } catch (error) {
-    console.error('Error listing client folders:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error listing client folders:', message)
     return {
       success: false,
-      message: `Error listing client folders: ${error}`,
+      message: `Error listing client folders: ${message}`,
     }
   }
 }

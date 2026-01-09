@@ -74,10 +74,11 @@ export const getFileContent = async (fileId: string): Promise<{ success: boolean
     }
 
   } catch (error) {
-    console.error('Error getting file content:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error getting file content:', message)
     return {
       success: false,
-      message: `Error getting file content: ${error}`,
+      message: `Error getting file content: ${message}`,
     }
   }
 }

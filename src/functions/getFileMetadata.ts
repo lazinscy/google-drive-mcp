@@ -37,10 +37,11 @@ export const getFileMetadata = async (
       },
     }
   } catch (error) {
-    console.error('Error getting file metadata:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error getting file metadata:', message)
     return {
       success: false,
-      message: `Error getting file metadata: ${error}`,
+      message: `Error getting file metadata: ${message}`,
     }
   }
 }

@@ -41,6 +41,14 @@ Optional:
 GOOGLE_DRIVE_TOKEN_PATH=/absolute/path/to/token.json
 ```
 
+## Resources (optional)
+
+This server also exposes MCP Resources for clients that prefer `resources/read` over tools:
+
+- `gdrive://file/{fileId}/metadata` (JSON)
+- `gdrive://file/{fileId}/content` (text, when supported)
+- `gdrive://folder/{folderId}/files` (JSON)
+
 3. **Install Dependencies**
 
 ```

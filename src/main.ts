@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { registerResources } from './resources/index.js'
 import { registerAllTools } from './tools/index.js'
 
 export async function main() {
@@ -11,6 +12,7 @@ export async function main() {
   // Ensure clients can enumerate resources even if we don't expose any yet.
   server.setResourceRequestHandlers()
 
+  registerResources(server)
   registerAllTools(server)
 
   const transport = new StdioServerTransport()

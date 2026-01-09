@@ -27,10 +27,11 @@ export const getFileRevisions = async (
       }))
     }
   } catch (error) {
-    console.error('Error getting file revisions:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error getting file revisions:', message)
     return {
       success: false,
-      message: `Error getting file revisions: ${error}`,
+      message: `Error getting file revisions: ${message}`,
     }
   }
 }
