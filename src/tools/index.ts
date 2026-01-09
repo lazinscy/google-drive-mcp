@@ -5,6 +5,7 @@ import { registerReturnFileTool } from './returnFile.tools.js'
 import { registerGetFileMetadataTool } from './getFileMetadata.tools.js'
 import { registerGetFileRevisionsTool } from './getFileRevisions.tools.js'
 import { registerListSharedWithMeTool } from './listSharedWithMe.tools.js'
+import { registerGetFileContentTool } from './getFileContent.tools.js'
 
 export function registerAllTools(server: McpServer) {
   registerListAllFoldersTool(server)
@@ -13,4 +14,5 @@ export function registerAllTools(server: McpServer) {
   registerGetFileMetadataTool(server)
   registerGetFileRevisionsTool(server)
   registerListSharedWithMeTool(server)
+  registerGetFileContentTool(server)
 }
