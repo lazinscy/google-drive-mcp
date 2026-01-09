@@ -7,11 +7,13 @@ import url from 'url'
 import fs from 'fs'
 import path from 'path'
 import { google } from 'googleapis'
+import { getEnvString, requireEnvString } from '../env.js'
 
-const CLIENT_ID = process.env.CLIENT_ID
-const CLIENT_SECRET = process.env.CLIENT_SECRET
+const CLIENT_ID = requireEnvString('CLIENT_ID')
+const CLIENT_SECRET = requireEnvString('CLIENT_SECRET')
 const PORT = 3000
-const TOKEN_PATH = path.join(process.cwd(), 'token.json')
+const TOKEN_PATH =
+  getEnvString('GOOGLE_DRIVE_TOKEN_PATH') ?? path.join(process.cwd(), 'token.json')
 
 const REDIRECT_URI = `http://localhost:${PORT}`
 const oauth2Client = new google.auth.OAuth2(

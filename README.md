@@ -35,6 +35,12 @@ CLIENT_SECRET=your-client-secret-here
 REDIRECT_URI=http://localhost:3000
 ```
 
+Optional:
+
+```
+GOOGLE_DRIVE_TOKEN_PATH=/absolute/path/to/token.json
+```
+
 3. **Install Dependencies**
 
 ```
@@ -90,6 +96,16 @@ Add the following MCP server configuration, adjusting the path to your build out
   }
 }
 ```
+
+If you use indirection, you can either:
+
+If you prefer, you can also pass credentials as CLI args (not recommended for long-term use):
+
+```
+node build/index.js --client-id "..." --client-secret "..." --redirect-uri "http://localhost:3000"
+```
+
+Run `node build/index.js --help` to see all supported flags.
 Save the file
 
 8. **Restart Claude Desktop**

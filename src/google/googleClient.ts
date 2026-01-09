@@ -2,14 +2,18 @@ import { google } from 'googleapis'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { getEnvString, requireEnvString } from '../env.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const TOKEN_PATH = path.resolve(__dirname, '../../token.json')
 
-const CLIENT_ID = process.env.CLIENT_ID
-const CLIENT_SECRET = process.env.CLIENT_SECRET
-const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000'
+const TOKEN_PATH =
+  getEnvString('GOOGLE_DRIVE_TOKEN_PATH') ?? path.resolve(__dirname, '../../token.json')
+
+const CLIENT_ID = requireEnvString('CLIENT_ID')
+const CLIENT_SECRET = requireEnvString('CLIENT_SECRET')
+const REDIRECT_URI =
+  getEnvString('REDIRECT_URI') ?? 'http://localhost:3000'
 
 const oauth2Client = new google.auth.OAuth2(
   CLIENT_ID,
